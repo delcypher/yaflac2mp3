@@ -49,7 +49,15 @@ Default options:
   <dest>      = ${DEST}
   <id3_tool>  = ${ID3}
 
+  <source> - The source directory containing flac files or nested directories that eventually lead to flac files.
+             Note you should put this script at the root of your music collection so that you don't get problems
+	     creating directories in the destination
+
+  <dest> - The destination directory. The directory structure in source will be recreated here.
+
   If you use -o, an existing mp3 file at destination dir it's overwritten
+
+  If you use -p additional parent directories (from source are created)
 
   If you use -i, id3_tool is set to id3v2.
   This is only necessary if your LAME version doesn't tag properly
@@ -110,6 +118,11 @@ for N_files in ${!files[@]}
   do
     dst_file="${DEST}/${files[${N_files}]/%\.flac/.mp3}"
     [[ -e "$dst_file" ]] && [[ -z $OVRWRT ]] && continue
+
+    #make parent dirs
+    echo "Creating $(dirname "$dst_file" )" 
+    mkdir -p $(dirname "$dst_file" ) || (echo "Failed to make directory" 1>&2 ; exit )
+
     vars=( `metaflac --no-utf8-convert --export-tags-to=- "${files[${N_files}]}"` )
 
     for N_vars in ${!vars[@]}
