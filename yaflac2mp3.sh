@@ -103,6 +103,9 @@ while getopts l:f:x:d:s:hio name; do
     esac
 done
 
+#strip trailing slash from $DEST if present (prevents problems with $dst_file )
+DEST="$(echo "$DEST" | sed 's/\/$//')"
+
 if [[ ! -d "${DEST}" ]]; then
   mkdir -p "${DEST}"
   [[ "$?" != "0" ]] && exit 2
